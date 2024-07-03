@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, os::unix::process};
 
 
 
@@ -35,14 +35,80 @@ pub struct HttpRequest {
     pub msg_body: String
 }
 
-impl From for HttpRequest {
-    fn from(s: String) -> self {
+impl From<String> for HttpRequest {
+    fn from(req: String) -> Self {
+        // 初始化
         let mut parsed_method = Method::Uninitialized;
         let mut parsed_version = Version::Uninitialized;
+        let mut parsed_resource = Resource::Path("".to_string());
+        
+        // 请求头是 key value 形式，因此使用 hashmap
+        let mut parsed_headers = HashMap::new();
+        let mut parsed_msg_body = "";
+        
+        for line in req.lines() {
+            if line.contains("HTTP") {
+                let (method, resource, version) = process_req_line(line);
+                parsed_method = method;
+                parsed_resource = resource;
+                parsed_version = version;
+            } else if line.contains(":") {
+                let (key, value) = process_header_line(line);
+                parsed_headers.insert(key, value);
+                
+            } else if line.len() == 0 {
+                
+            } else {
+                // 处理消息体
+                parsed_msg_body = line;
+            }
+        }
+
+        return HttpRequest {
+            method: parsed_method,
+            version: parsed_version,
+            resource: parsed_resource,
+            headers: parsed_headers,
+            msg_body: parsed_msg_body.to_string()
+        }
 
     }
 }
 
+
+fn process_req_line(s: &str) -> (Method, Resource, Version) {
+    let mut words = s.split_whitespace();
+    let method = words.next().unwrap();
+    let resource = words.next().unwrap();
+    let version = words.next().unwrap();
+
+    return (
+        method.into(),
+        Resource::Path(resource.to_string()),
+        version.into()
+    )
+}
+
+
+fn process_header_line(s: &str) -> (String, String) {
+    let mut header_items = s.split(":");
+    let mut key = String::from("");
+    let mut value = String::from("");
+
+    if let Some(k) = header_items.next() {
+        key = k.to_string();
+    }
+
+    if let Some(v) = header_items.next() {
+        value = v.trim().to_string();
+    }
+
+    return (
+        key,
+        value
+    )
+    
+}
 
 #[derive(Debug, PartialEq)]
 pub enum Version {
@@ -73,6 +139,25 @@ mod tests {
     fn test_version_into() {
         let v: Version = "HTTP/1.1".into();
         assert_eq!(v, Version::V1_1)
+    }
+
+
+    #[test]
+    fn test_read_http() {
+        let s = String::from("GET /greeting HTTP/1.1\r\nHost: localhost\r\nUser-Agent: curl/7.71.1\r\nAccept: */*\r\n\r\n");
+    
+        let mut header_expected = HashMap::new();
+        header_expected.insert("Accept".into(), "*/*".into());
+        header_expected.insert("Host".into(), "localhost".into());
+        header_expected.insert("User-Agent".into(), "curl/7.71.1".into());
+        
+
+        let req: HttpRequest = s.into();
+
+        assert_eq!(Method::Get, req.method);
+        assert_eq!(Version::V1_1, req.version);
+        assert_eq!(Resource::Path("/greeting".to_string()), req.resource);
+        assert_eq!(header_expected, req.headers);
     }
 }
 

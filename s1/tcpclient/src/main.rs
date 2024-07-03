@@ -7,6 +7,7 @@ fn main() {
     // 使用 TcpStream 这个包中的 connect 函数来建立客户端与服务端的链接，返回值是一个 Stream
     let mut stream = TcpStream::connect("localhost:3000").unwrap();
 
+    // 向服务端发送消息，也就是向 stream 中写入内容
     stream.write("hello".as_bytes()).unwrap();
 
     let mut buffer = [0; 5];

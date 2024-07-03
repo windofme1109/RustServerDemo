@@ -1,7 +1,7 @@
 use std::net::TcpListener;
 use std::io::{Read, Write};
 fn main() {
-
+    // 监听来自 127.0.0.1:3000 的连接
     let listener = TcpListener::bind("127.0.0.1:3000").unwrap();
 
     println!("Running on port 3000 ...");
