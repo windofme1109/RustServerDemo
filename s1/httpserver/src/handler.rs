@@ -56,10 +56,11 @@ impl Handler for StaticPageHandler {
                 HttpResponse::new("200", None, Self::load_file("health.html"))
 
             }
-            path => match  Self::load_file(path) {
+            path => match Self::load_file(path) {
                 Some(contents) => {
                     let mut map: HashMap<&str, &str> = HashMap::new();
                     if path.ends_with(".css") {
+
                         map.insert("Content-Type", "text/css");
                     } else if path.ends_with(".js") {
                         map.insert("Content-Type", "text/javascript");

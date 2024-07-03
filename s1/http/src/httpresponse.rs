@@ -31,22 +31,17 @@ impl<'a> HttpResponse<'a> {
         body: Option<String>
     ) -> HttpResponse<'a> {
         let mut repsonse: HttpResponse<'a> = HttpResponse::default();
-        
-        // let b = body.unwrap();
-        // let content_length = b.clone().len().to_string().as_str();
-        
-        let body_string = body.unwrap();
-      
+
         if status_code != "200" {
             repsonse.status_code = status_code.into();
         }
+        let mut h = HashMap::new();
+
 
         repsonse.headers = match &headers {
             Some(_h) => headers,
             None => {
-                let mut h = HashMap::new();
-                h.insert("Content-Type", "text/html");           
-                h.insert("Content-Length", );           
+                h.insert("Content-Type", "text/html");
                 Some(h)
             }
         };
@@ -114,7 +109,7 @@ impl<'a> From<HttpResponse<'a>> for String {
         let res1 = res.clone();
 
         format!(
-            "{} {} {}\r\n{}Content-Lenght: {}\r\n\r\n{}",
+            "{} {} {}\r\n{}Content-Length: {}\r\n\r\n{}",
             &res1.version(),
             &res1.status_code(),
             &res1.status_text(),
