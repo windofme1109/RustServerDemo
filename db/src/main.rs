@@ -12,12 +12,36 @@ pub struct Course {
     pub time: Option<NaiveDateTime>
 }
 
-#[actix rt::main]
+#[actix_rt::main]
 async fn main() -> io::Result<()> {
     dotenv().ok();
-    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL 没有在 .env 文件中");
-    let db_pool = PgPoolOptions::new();
 
+    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL 没有在 .env 文件中");
+    let db_pool = PgPoolOptions::new().connect(&database_url).await.unwrap();
+
+    let course_rows = sqlx::query!(
+        r#"select id, teacher_id, name, time from course where id = $1"#,
+        1
+    )
+    .fetch_all(&db_pool)
+    .await
+    .unwrap();
+
+
+    let mut course_list = vec![];
+
+    for row in course_rows {
+        course_list.push(Course {
+            id: row.id,
+            teacher_id: row.teacher_id,
+            name: row.name,
+            time: Some(chrono::NaiveDateTime::from(row.time.unwrap()))
+        })
+    }
+
+    println!("Courses = {:?}", course_list);
+
+    Ok(())
 
 }
 
