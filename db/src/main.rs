@@ -21,7 +21,7 @@ async fn main() -> io::Result<()> {
 
     let course_rows = sqlx::query!(
         r#"select id, teacher_id, name, time from course where id = $1"#,
-        1
+        2
     )
     .fetch_all(&db_pool)
     .await
