@@ -33,7 +33,7 @@ impl From<web::Json<CreateTeacher>> for CreateTeacher {
     }
 }
 
-impl From<web::Json<CreateTeacher>> for UpdateTeacher {
+impl From<web::Json<UpdateTeacher>> for UpdateTeacher {
     fn from(new_teacher: web::Json<UpdateTeacher>) -> Self {
         UpdateTeacher  {
             name: new_teacher.name.clone(),
