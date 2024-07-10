@@ -27,7 +27,7 @@ pub async fn get_courses_for_teacher_db(pool: &PgPool, teacher_id: i32) -> Resul
 
     let rows: Vec<Course> = sqlx::query_as!(
         Course,
-        r#"SELECT *FROM course WHERE teacher_id = $1"#,
+        r#"SELECT * FROM course WHERE teacher_id = $1"#,
         teacher_id
     ).fetch_all(pool).await?;
 
