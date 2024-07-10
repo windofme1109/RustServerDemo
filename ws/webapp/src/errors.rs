@@ -5,9 +5,9 @@ use std::fmt;
 #[allow(dead_code)]
 #[derive(Debug, Serialize)]
 pub enum MyError {
-    ActixError(string),
-    NotFound(string),
-    TeraError(string)
+    ActixError(String),
+    NotFound(String),
+    TeraError(String)
 }
     
 #[derive(Debug, Serialize)]
