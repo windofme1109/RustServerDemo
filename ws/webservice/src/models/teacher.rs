@@ -1,6 +1,7 @@
 use actix_web::web;
-use actix_web::web::Json;
 use serde::{Deserialize, Serialize};
+
+
 #[derive(Deserialize,Serialize, Debug, Clone)]
 pub struct Teacher {
     pub id: i32,
@@ -24,7 +25,7 @@ pub struct UpdateTeacher {
 
 impl From<web::Json<CreateTeacher>> for CreateTeacher {
     fn from(new_teacher: web::Json<CreateTeacher>) -> Self {
-        CreateTeacher  {
+        CreateTeacher {
             name: new_teacher.name.clone(),
             picture_url: new_teacher.picture_url.clone(),
             profile: new_teacher.profile.clone(),
@@ -35,7 +36,7 @@ impl From<web::Json<CreateTeacher>> for CreateTeacher {
 
 impl From<web::Json<UpdateTeacher>> for UpdateTeacher {
     fn from(new_teacher: web::Json<UpdateTeacher>) -> Self {
-        UpdateTeacher  {
+        UpdateTeacher {
             name: new_teacher.name.clone(),
             picture_url: new_teacher.picture_url.clone(),
             profile: new_teacher.profile.clone(),

@@ -317,6 +317,8 @@ mod tests {
             Err(err) => assert_eq!(err.status_code(), StatusCode::NOT_FOUND)
         }
     }
+
+
     #[actix_rt::test]
     async fn update_courses_success() {
         dotenv().ok();
@@ -350,6 +352,8 @@ mod tests {
 
         assert_eq!(resp.status(), StatusCode::OK)
     }
+
+
     #[actix_rt::test]
     async fn delete_course_success() {
         dotenv().ok();
@@ -393,7 +397,7 @@ mod tests {
 
         match resp {
             Ok(_) => println!("Something wrong"),
-            Err(err) => assert_eq!(err.status_code(), StatusCode::OK),
+            Err(err) => assert_eq!(err.status_code(), StatusCode::NOT_FOUND),
         };
 
     }

@@ -10,8 +10,8 @@ pub struct TeacherRegisterForm  {
 #[derive(Serialize, Deserialize,Debug)]
 pub struct TeacherResponse {
     pub id: i32,
-    pub name: string,
+    pub name: String,
     pub picture_url: String,
-    pub profile: string,
+    pub profile: String,
 }
 

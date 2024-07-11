@@ -1,14 +1,16 @@
-use std::fmt::format;
 use chrono::NaiveDateTime;
 use sqlx::postgres::PgPool;
+use std::fmt::format;
 
+use crate::errors::MyError;
 use crate::models::course::Course;
 use crate::models::course::CreateCourse;
 use crate::models::course::UpdateCourse;
-use crate::errors::MyError;
 
-pub async fn get_courses_for_teacher_db(pool: &PgPool, teacher_id: i32) -> Result<Vec<Course>, MyError> {
-
+pub async fn get_courses_for_teacher_db(
+    pool: &PgPool,
+    teacher_id: i32,
+) -> Result<Vec<Course>, MyError> {
     // let rows = sqlx::query!(
     //     r#"SELECT id, teacher_id, name, time
     //     FROM course
@@ -24,13 +26,13 @@ pub async fn get_courses_for_teacher_db(pool: &PgPool, teacher_id: i32) -> Resul
     //     teacher_id
     // ).fetch_all(pool).await?;
 
-
     let rows: Vec<Course> = sqlx::query_as!(
         Course,
         r#"SELECT * FROM course WHERE teacher_id = $1"#,
         teacher_id
-    ).fetch_all(pool).await?;
-
+    )
+    .fetch_all(pool)
+    .await?;
 
     Ok(rows)
 
@@ -47,10 +49,13 @@ pub async fn get_courses_for_teacher_db(pool: &PgPool, teacher_id: i32) -> Resul
     //     0 => Err(MyError::NotFound("Courses not found for teacher".into())),
     //     _ => Ok(courses)
     // }
-
 }
 
-pub async fn get_course_details_db(pool: &PgPool, teacher_id: i32, course_id: i32) -> Result<Course, MyError> {
+pub async fn get_course_details_db(
+    pool: &PgPool,
+    teacher_id: i32,
+    course_id: i32,
+) -> Result<Course, MyError> {
     // let row = sqlx::query!(
     //     r#"SELECT id, teacher_id, name, time
     //     FROM course
@@ -67,27 +72,26 @@ pub async fn get_course_details_db(pool: &PgPool, teacher_id: i32, course_id: i3
     //     course_id
     // ).fetch_one(pool).await;
 
-
     let row: Option<Course> = sqlx::query_as!(
         Course,
         r#"SELECT * FROM course WHERE teacher_id = $1 and id = $2"#,
         teacher_id,
         course_id
     )
-        .fetch_optional(pool)
-        .await?;
+    .fetch_optional(pool)
+    .await?;
 
-   if let Some(course) = row {
-       Ok(course)
-   } else {
-       Err(MyError::NotFound("Course Id not found".into()))
-   }
-
-
+    if let Some(course) = row {
+        Ok(course)
+    } else {
+        Err(MyError::NotFound("Course Id not found".into()))
+    }
 }
 
-pub async fn post_new_course_db(pool: &PgPool, new_course: CreateCourse) -> Result<Course, MyError> {
-
+pub async fn post_new_course_db(
+    pool: &PgPool,
+    new_course: CreateCourse,
+) -> Result<Course, MyError> {
     // let row = sqlx::query!(
     //     r#"INSERT INTO course (id, teacher_id, name)
     //     VALUES ($1, $2, $3)
@@ -137,19 +141,24 @@ pub async fn post_new_course_db(pool: &PgPool, new_course: CreateCourse) -> Resu
     Ok(row)
 }
 
-
 pub async fn delete_course_db(pool: &PgPool, teacher_id: i32, id: i32) -> Result<String, MyError> {
     let course_row = sqlx::query!(
         "DELETE FROM course WHERE teacher_id = $1 AND id = $2",
         teacher_id,
         id
-    ).execute(pool).await?;
+    )
+    .execute(pool)
+    .await?;
 
     Ok(format!("Deleted {:?} record", course_row))
 }
 
-pub async fn update_course_details_db(pool: &PgPool, teacher_id: i32, id: i32, update_course: UpdateCourse) -> Result<Course, MyError> {
-
+pub async fn update_course_details_db(
+    pool: &PgPool,
+    teacher_id: i32,
+    id: i32,
+    update_course: UpdateCourse,
+) -> Result<Course, MyError> {
     // 先根据 teacher_id 和 id 进行查询，得到一条数据
     let current_course_row = sqlx::query_as!(
         Course,
@@ -157,10 +166,9 @@ pub async fn update_course_details_db(pool: &PgPool, teacher_id: i32, id: i32, u
         teacher_id,
         id
     )
-        .fetch_one(pool)
-        .await
-        .map_err(|_err|  MyError::NotFound("Course Id not found".into()))?;
-
+    .fetch_one(pool)
+    .await
+    .map_err(|_err| MyError::NotFound("Course Id not found".into()))?;
 
     let name: String = if let Some(name) = update_course.name {
         name
@@ -220,9 +228,8 @@ pub async fn update_course_details_db(pool: &PgPool, teacher_id: i32, id: i32, u
         id
 
     )
-        .fetch_one(pool)
-        .await;
-
+    .fetch_one(pool)
+    .await;
 
     if let Ok(course) = course_row {
         Ok(course)
