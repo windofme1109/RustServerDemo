@@ -12,7 +12,7 @@ extern "C" {
     fn alert(s: &str);
     fn confirm(s: &str) -> bool;
     #[wasm_bindgen(js_namespace = console)]
-    fn log(s: &str)
+    fn log(s: &str);
 }
 
 #[wasm_bindgen]
@@ -39,7 +39,7 @@ pub async fn main() -> Result<(), JsValue> {
         .get_element_by_id("left-tbody")
         .expect("left div not exists");
 
-    let courses: Vec<Course> = models::course::get_courses_by_teacher(1);await;
+    let courses: Vec<Course> = models::course::get_courses_by_teacher(1).await;
     for c in courses.iter() {
         let tr = document.create_element("tr")?;
         tr.set_attribute("id", format!("tr-{}",c.id).as_str())?;
@@ -49,21 +49,22 @@ pub async fn main() -> Result<(), JsValue> {
         tr.append_child(&td)?;
 
         let td = document.create_element("td")?;
-        td.set_text_content(Some(c.time.format("%Y-%m-%d").to _string().as_str()));
+        td.set_text_content(Some(c.time.format("%Y-%m-%d").to_string().as_str()));
         tr.append_child(std)?;
 
         let td = document.create_element("td")?;
         if let Some(desc) = c.description.clone() {
-            td.set_text_content(Some(desc.as str())); 
+            td.set_text_content(Some(desc.as_str())); 
         }
         tr.append_child(&td)?;
 
         let td = document.create_element("td")?;
+
         let btn: HtmlButtonElement = document
             .create_element("button")
             .unwrap()
             .dyn_into::<HtmlButtonElement>()
-            .unwrap()
+            .unwrap();
         
         let cid = c.id;
         
@@ -73,7 +74,7 @@ pub async fn main() -> Result<(), JsValue> {
 
                 match r {
                     true => {
-                        saawn_local(delete_course(1, cid));
+                        spawn_local(delete_course(1, cid));
                         alert("删除成功!");
                         web_sys::window().unwrap().location().reload().unwrap();
                     }
@@ -81,15 +82,17 @@ pub async fn main() -> Result<(), JsValue> {
                 }
         }) as Box<dyn Fn(_)>); 
         
-        btn.add_event_lisntener_with_callback("click", click_closure.as_ref().unchecked_ref())
+        btn.add_event_listener_with_callback("click", click_closure.as_ref().unchecked_ref());
 
         click_closure.forget();
 
         btn.set_attribute("class", "btn btn-danger btn-sm")?;
         btn.set_text_content(Some("Delete"));
+
         td.append_child(&btn)?;
 
         tr.append_child(&td)?;
+
         left_tbody.append_child(&tr);
     }
 

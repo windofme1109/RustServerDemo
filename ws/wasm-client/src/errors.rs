@@ -1,12 +1,12 @@
 use serde::Serialize;
 
 #[derive(Debug,Serialize)]
-pub enum MyError i{
+pub enum MyError {
     SomeError(String)
 }
 impl From<String> for MyError {
-    fn from(s: String)- Self {
-        MyError ::SomeError(s)
+    fn from(s: String) -> Self {
+        MyError::SomeError(s)
     }
 }
 impl From<wasm_bindgen::JsValue> for MyError {
