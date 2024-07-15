@@ -26,7 +26,7 @@ pub mod models;
 
 use models::course::{delete_course, get_courses_by_teacher, Course};
 
-use wasm_bindgen::jsCast;
+use wasm_bindgen::JsCast;
 use wasm_bindgen_futures::*;
 use web_sys::HtmlButtonElement;
 
@@ -39,10 +39,10 @@ pub async fn main() -> Result<(), JsValue> {
         .get_element_by_id("left-tbody")
         .expect("left div not exists");
 
-    let courses: Vec<Course> = models::course::get_courses_by_teacher(1).await;
+    let courses: Vec<Course> = models::course::get_courses_by_teacher(1).await.unwrap();
     for c in courses.iter() {
         let tr = document.create_element("tr")?;
-        tr.set_attribute("id", format!("tr-{}",c.id).as_str())?;
+        tr.set_attribute("id", format!("tr-{}", c.id).as_str())?;
 
         let td = document.create_element("td")?;
         td.set_text_content(Some(format!("{}",c.id).as_str()));
@@ -50,7 +50,7 @@ pub async fn main() -> Result<(), JsValue> {
 
         let td = document.create_element("td")?;
         td.set_text_content(Some(c.time.format("%Y-%m-%d").to_string().as_str()));
-        tr.append_child(std)?;
+        tr.append_child(&td)?;
 
         let td = document.create_element("td")?;
         if let Some(desc) = c.description.clone() {
