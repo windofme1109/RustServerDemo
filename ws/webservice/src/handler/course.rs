@@ -53,6 +53,9 @@ pub async fn get_courses_for_teacher(
     params: web::Path<i32>
 ) -> Result<HttpResponse, MyError> {
     let teacher_id = params.into_inner();
+
+    println!("get_courses_for_teacher: teacher_id {}", teacher_id);
+
     get_courses_for_teacher_db(&app_state.db, teacher_id)
         .await
         .map(|course| HttpResponse::Ok().json(course))

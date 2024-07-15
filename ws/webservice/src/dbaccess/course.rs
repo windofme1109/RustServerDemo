@@ -1,6 +1,6 @@
-use chrono::NaiveDateTime;
+// use chrono::NaiveDateTime;
 use sqlx::postgres::PgPool;
-use std::fmt::format;
+// use std::fmt::format;
 
 use crate::errors::MyError;
 use crate::models::course::Course;

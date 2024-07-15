@@ -39,7 +39,7 @@ pub async fn update_teacher_details(app_state: web::Data<AppState>, params: web:
 }
 
 
-pub async fn delete_teacher(app_state: web::Data<AppState>, params: web::Path<i32>) -> Result<HttoResponse,MyError>{
+pub async fn delete_teacher(app_state: web::Data<AppState>, params: web::Path<i32>) -> Result<HttpResponse,MyError>{
     let teacher_id = params.into_inner();
     delete_teacher_db(&app_state.db, teacher_id)
     .await

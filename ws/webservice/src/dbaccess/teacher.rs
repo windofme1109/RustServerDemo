@@ -3,13 +3,17 @@ use crate::models::teacher::{CreateTeacher, Teacher, UpdateTeacher};
 use sqlx::postgres::PgPool;
 
 pub async fn get_all_teachers_db(pool: &PgPool) -> Result<Vec<Teacher>, MyError> {
-    let rows: Vec<Teacher> = sqlx::query("SELECT id, name, picture_url, profile FROM teacher")
+
+    // 使用 query! 宏，可以在编译的时候对 SQL 语句进行语法和语义上的确认
+    // 其输出是匿名记录类型（Record），其中每个 SQL 列都是这个 Record 的 Rust 字段
+    // 也就是说，每个 Record，就是我们从数据表中，每一行中选择的字段组成的结构体，只不过 Record 是匿名的
+    let rows = sqlx::query!("SELECT id, name, picture_url, profile FROM teacher")
     .fetch_all(pool)
     .await.unwrap();
         
 
     let teachers: Vec<Teacher> = rows.iter().map(|r| Teacher {
-        id: r.id,
+        id: r.id.unwrap(),
         name: r.name.clone(),
         picture_url: r.picture_url.clone(),
         profile: r.profile.clone(),
@@ -44,7 +48,7 @@ pub async fn post_new_teacher_db(
     new_teacher: CreateTeacher,
 ) -> Result<Teacher, MyError> {
 
-    let row: Teacher = sqlx::query!(
+    let row = sqlx::query!(
         "INSERT INTO teacher (name, picture_url, profile) VALUES ($1, $2, $3) RETURNING id, name, picture_url, profile",
         new_teacher.name,
         new_teacher.picture_url,
@@ -54,7 +58,7 @@ pub async fn post_new_teacher_db(
         .await?;
 
     Ok(Teacher {
-        id: row.id,
+        id: row.id.unwrap(),
         name: row.name,
         picture_url: row.picture_url,
         profile: row.profile,
@@ -66,7 +70,9 @@ pub async fn update_teacher_details_db(
     teacher_id: i32,
     update_teacher: UpdateTeacher,
 ) -> Result<Teacher, MyError> {
-    let row: Teacher = sqlx::query!(
+
+    // 
+    let row = sqlx::query!(
         "SELECT id, name, picture_url, profile FROM teacher WHERE id = $1",
         teacher_id
     )
@@ -74,8 +80,9 @@ pub async fn update_teacher_details_db(
     .await
     .map_err(|err| MyError::NotFound("Teacher id not found".into())).unwrap();
 
+
     let temp = Teacher {
-        id: row.id,
+        id: row.id.unwrap(),
         name: if let Some(name) = update_teacher.name {
             name
         } else {
