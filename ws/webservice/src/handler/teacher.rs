@@ -21,6 +21,8 @@ pub async fn get_teacher_details(app_state: web::Data<AppState>, params: web::Pa
 
 pub async fn post_new_teacher(new_teacher:web::Json<CreateTeacher>, app_state: web::Data<AppState>) -> Result<HttpResponse, MyError> {
     
+    // println!("new_teacher {:?}", new_teacher);
+
     post_new_teacher_db(&app_state.db, CreateTeacher::from(new_teacher))
     .await
     .map(|teacher| HttpResponse::Ok().json(teacher))

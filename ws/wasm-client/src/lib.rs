@@ -45,6 +45,10 @@ pub async fn main() -> Result<(), JsValue> {
         tr.set_attribute("id", format!("tr-{}", c.id).as_str())?;
 
         let td = document.create_element("td")?;
+        td.set_text_content(Some(c.name.as_str()));
+        tr.append_child(&td)?;
+
+        let td = document.create_element("td")?;
         td.set_text_content(Some(format!("{}",c.id).as_str()));
         tr.append_child(&td)?;
 

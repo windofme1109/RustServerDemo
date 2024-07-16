@@ -1,3 +1,4 @@
+// import * as wasm from "hello-wasm-pack";
 import * as wasm from 'wasm-client';
 
 const myForm = document.getElementById('form');

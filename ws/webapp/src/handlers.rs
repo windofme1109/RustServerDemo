@@ -5,10 +5,12 @@ use serde_json::json;
 use tera;
 
 pub async fn get_all_teachers(tmpl: web::Data<tera::Tera>) -> Result<HttpResponse, Error> {
+    
     // 新建一个 http 客户端，用来访问 http 内容
     let awc_client = awc::Client::default();
+    
     let res = awc_client
-        .get("http://localhost:3000/teachers/")
+        .get("http://localhost:9009/teachers/")
         .send()
         .await
         .unwrap()
@@ -20,15 +22,21 @@ pub async fn get_all_teachers(tmpl: web::Data<tera::Tera>) -> Result<HttpRespons
 
     ctx.insert("error", "");
     ctx.insert("teachers", &res);
+
     let s = tmpl
         .render("teachers.html", &ctx)
         .map_err(|_| MyError::TeraError("Template error".to_string())).unwrap();
 
     Ok(HttpResponse::Ok().content_type("text/html").body(s))
+
 }
 
 pub async fn show_register_form(tmpl: web::Data<tera::Tera>) -> Result<HttpResponse, Error> {
+
+    println!("path - register");
+
     let mut ctx = tera::Context::new();
+
     ctx.insert("error", "");
     ctx.insert("current_name", "");
 
@@ -42,6 +50,8 @@ pub async fn show_register_form(tmpl: web::Data<tera::Tera>) -> Result<HttpRespo
     Ok(HttpResponse::Ok().content_type("text/html").body(s))
 }
 
+
+
 pub async fn handle_register(
     tmpl: web::Data<tera::Tera>,
     params: web::Form<TeacherRegisterForm>,
@@ -50,15 +60,20 @@ pub async fn handle_register(
     let mut ctx = tera::Context::new();
     let s;
 
+    println!("params {:?}", params);
+
 
     if params.name == "Dave" {
         ctx.insert("error", "Dave already exists!");
         ctx.insert("current_name", &params.name);
         ctx.insert("current_imageurl", &params.imageurl);
         ctx.insert("current_profile", &params.profile);
+
+
         s = tmpl
             .render("register.html", &ctx)
-            .map_err(|_| MyError::TeraError("Template error".to_string()))?;
+            .map_err(|_| MyError::TeraError("Template error".to_string())).unwrap();
+
     } else {
         let new_teacher = json!({
             "name": &params.name,
@@ -66,11 +81,12 @@ pub async fn handle_register(
             "profile": &params.profile
         });
             
+        println!("new_teacher {:?}", new_teacher);
             
         let awc_client = awc::Client::default();
 
         let res = awc_client
-            .post("http://localhost:3000/teachers/")
+            .post("http://localhost:9009/teachers/")
             .send_json(&new_teacher)
             .await
             .unwrap()
@@ -85,4 +101,5 @@ pub async fn handle_register(
     
 
     Ok(HttpResponse::Ok().content_type("text/html").body(s))
+
 }

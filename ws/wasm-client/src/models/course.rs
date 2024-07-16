@@ -27,7 +27,7 @@ pub async fn get_courses_by_teacher(teacher_id: i32) -> Result<Vec<Course>,MyErr
     let mut opts = RequestInit::new();
     opts.method("GET");
     opts.mode(RequestMode::Cors);
-    let url = format!("http://localhost:3000/courses/{}", teacher_id);
+    let url = format!("http://localhost:9009/courses/{}", teacher_id);
     let request = Request::new_with_str_and_init(&url, &opts)?;
     request.headers().set("Accept","application/json")?;
 
@@ -49,7 +49,7 @@ pub async fn delete_course(teacher_id: i32, course_id: i32) -> () {
     opts.method("DELETE");
     opts.mode(RequestMode::Cors);
 
-    let url = format!("http://localhost:3000/courses/{}/{}", teacher_id, course_id);
+    let url = format!("http://localhost:9009/courses/{}/{}", teacher_id, course_id);
 
     let request = Request::new_with_str_and_init(&url, &opts).unwrap();
     request.headers().set("Accept","application/json").unwrap();
@@ -75,7 +75,7 @@ pub async fn add_course(name: String, description: String) -> Result<Promise, Js
     opts.method("POST");
     opts.mode(RequestMode::Cors);
 
-    let url = format!("http://localhost:3000/courses/");
+    let url = format!("http://localhost:9009/courses/");
 
     let str_json = format!(
         r#"
