@@ -80,7 +80,7 @@ pub async fn add_course(name: String, description: String) -> Result<Promise, Js
     let str_json = format!(
         r#"
             {{
-            "teacher id": 1,
+            "teacher_id": 1,
             "name": "{}",
             "description": "{}"
             }}

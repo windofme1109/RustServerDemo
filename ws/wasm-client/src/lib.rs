@@ -40,17 +40,20 @@ pub async fn main() -> Result<(), JsValue> {
         .expect("left div not exists");
 
     let courses: Vec<Course> = models::course::get_courses_by_teacher(1).await.unwrap();
+    
     for c in courses.iter() {
         let tr = document.create_element("tr")?;
         tr.set_attribute("id", format!("tr-{}", c.id).as_str())?;
 
         let td = document.create_element("td")?;
-        td.set_text_content(Some(c.name.as_str()));
+        td.set_text_content(Some(format!("{}",c.id).as_str()));
         tr.append_child(&td)?;
 
         let td = document.create_element("td")?;
-        td.set_text_content(Some(format!("{}",c.id).as_str()));
+        td.set_text_content(Some(c.name.as_str()));
         tr.append_child(&td)?;
+
+        
 
         let td = document.create_element("td")?;
         td.set_text_content(Some(c.time.format("%Y-%m-%d").to_string().as_str()));
