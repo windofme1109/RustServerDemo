@@ -1,2 +1,2 @@
 [workspace]
-members = ['tcpclient', 'tcpserver']
+members = [ "http", "httpserver",'tcpclient', 'tcpserver']

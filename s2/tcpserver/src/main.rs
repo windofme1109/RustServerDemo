@@ -30,7 +30,10 @@ fn main() {
         // 将收到的内容打印出来
         println!("{:?}", from_utf8(validBuf).unwrap());
 
+        let response = format!("HTTP/1.1 200 OK\r\ncontent-length: 11\r\n\r\nhello world");
+
         stream.write(&buf);
+        // stream.write(response.as_bytes());
 
     }
 }
