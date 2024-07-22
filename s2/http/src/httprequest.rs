@@ -20,8 +20,8 @@ pub enum Method {
 impl From<&str> for Method {
     fn from(s: &str) -> Self {
         match s {
-           Get => Method::Get,
-           Post => Method::Post,
+           get => Method::Get,
+           post => Method::Post,
             _ => Method::Uninitialized
         }
     }
@@ -50,6 +50,7 @@ pub enum Resource {
     Path(String)
 }
 
+#[derive(Debug, PartialEq)]
 pub struct HttpRequest {
     pub method: Method,
     pub version: Version,
@@ -124,7 +125,7 @@ fn process_req_line(s: &str) -> (Method, Version, Resource) {
 
 
 fn process_header_line(s: &str) -> (String, String) {
-    let mut header = s.split("");
+    let mut header = s.split(":");
     let mut key = "".to_string();
     let mut val = "".to_string();
 
@@ -152,5 +153,34 @@ mod tests {
         let m: Method = "GET".into();
 
         assert_eq!(m, Method::Get);
+    }
+
+    #[test]
+    fn test_version_into() {
+        let v: Version = "http/1.1".into();
+
+        assert_eq!(v, Version::V1_1);
+    }
+
+    #[test]
+    fn test_read_http() {
+
+        let request_str = String::from("Get /api/name http/1.1\r\ncontent-type:plain/text\r\n\r\n");
+
+        let parsed_request = HttpRequest::from(request_str);
+
+        let mut headers = HashMap::new();
+        headers.insert("content-type".into(), "plain/text".into());
+
+        let request = HttpRequest {
+            method: Method::Get,
+            version: Version::V1_1,
+            resource: Resource::Path("/api/name".to_string()),
+            headers,
+            msg_body: "".to_string()
+        };
+
+
+        assert_eq!(request, parsed_request);
     }
 }
