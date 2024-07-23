@@ -60,7 +60,6 @@ impl Handler for StaticPageHandler {
                 Some(contents) => {
                     let mut map: HashMap<&str, &str> = HashMap::new();
                     if path.ends_with(".css") {
-
                         map.insert("Content-Type", "text/css");
                     } else if path.ends_with(".js") {
                         map.insert("Content-Type", "text/javascript");
