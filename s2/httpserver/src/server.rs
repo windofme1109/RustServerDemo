@@ -11,13 +11,15 @@ pub struct Server<'a> {
 }
 
 impl<'a> Server<'a> {
-    fn new(addr: &'a str) -> Self {
+    pub fn new(addr: &'a str) -> Self {
         Self { socket_addr: addr }
     }
 
 
-    fn run(&self) {
+    pub fn run(&self) {
         let listener = TcpListener::bind(self.socket_addr).unwrap();
+
+        println!("Server is running on {}", self.socket_addr);
 
         for stram in listener.incoming() {
             let mut stream = stram.unwrap();

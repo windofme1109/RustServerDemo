@@ -72,7 +72,7 @@ impl From<String> for HttpRequest {
 
         for line in req.lines() {
             
-            if line.to_lowercase().contains("http") {
+            if line.contains("HTTP") {
                 // 解析首行
                 let (method, version, resource) = process_req_line(line);
                 parsed_method = method;
@@ -103,8 +103,10 @@ impl From<String> for HttpRequest {
 
 // 对 http 请求的首行进行解析
 fn process_req_line(s: &str) -> (Method, Version, Resource) {
+
     // http 请求的首行格式：请求方法 请求路径 协议版本\r\n
     let mut content = s.split_ascii_whitespace();
+  
     let method = content.next().unwrap();
     let path = content.next().unwrap();
     let version = content.next().unwrap();

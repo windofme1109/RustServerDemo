@@ -19,7 +19,9 @@ pub struct HttpResponse<'a> {
     headers: Option<HashMap<&'a str, &'a str>>,
     status_text: &'a str,
     status_code: &'a str,
-    body: Option<String>
+    // body: Option<String>,
+    body: Option<Vec<u8>>,
+    // byte_content: Option<Vec<u8>>
 }
 
 impl<'a> Default for HttpResponse<'a> {
@@ -30,7 +32,7 @@ impl<'a> Default for HttpResponse<'a> {
             headers: None,
            status_code: "200".into(),
            status_text: "OK".into(),
-           body: None
+           body: None,
        } 
     }
 }
@@ -42,13 +44,12 @@ impl<'a> From<HttpResponse<'a>> for String {
         let copied_response = response.clone();
 
         format!(
-            "{} {} {}\r\nContent-Length:{}\r\n{}\r\n{}", 
+            "{} {} {}\r\nContent-Length:{}\r\n{}\r\n", 
             copied_response.version(),
             copied_response.status_code(),
             copied_response.status_text(),
             copied_response.body().len(),
             copied_response.headers(),
-            copied_response.body()
         )
     }
 }
@@ -57,10 +58,10 @@ impl<'a> HttpResponse<'a> {
     pub fn new(
         status_code: &'a str,
         headers: Option<HashMap<&'a str, &'a str>>,
-        body: Option<String>
+        body: Option<Vec<u8>>
     ) -> HttpResponse<'a> {
         let mut response = HttpResponse::default();
-
+       
         if status_code != "200" {
             response.status_code = status_code;
         }
@@ -104,21 +105,32 @@ impl<'a> HttpResponse<'a> {
         response
     }
 
+
+
     // write_stream 的类型是任何实现了 Write 这个 trait 的类型
     pub fn send_response(&self, write_stream: &mut impl Write) -> Result<()> {
         let res = self.clone();
+        let mut body = res.body();
+
 
         let response_string = String::from(res);
+        let mut res_bytes = response_string.as_bytes().to_vec();
+        println!("{}", response_string);
         // write! 这个宏的作用是：向一个缓冲区里写格式化的数据
         // 这个宏接受一个'writer'，一个格式化字符串和一系列参数
         // 这些参数均会根据这个格式化的字符串被格式化，然后一并传给前面的 writer
         // 这个 writer 可以是任何带有 write_fmt 方法的值（可以理解为对象）
         // 一般来说这个值要么实现了 std::fmt::Write trait，要么实现了 std::io::Write trait
         // 这个宏返回write_fmt方法的返回值；一般是 std::fmt::Resul 或 std::io::Result
-        let _ = write!(write_stream, "{}", response_string);
+        // let _ = write!(write_stream, "{}", response_string);
+
+        res_bytes.append(&mut body);
+
+        // write_stream.write(response_string.as_bytes()).unwrap();
+        write_stream.write_all(&res_bytes[..]).unwrap();
+        // write_stream.flush().unwrap();
 
         Ok(())
-
     }
 
     // 实现 getter 方法
@@ -152,13 +164,13 @@ impl<'a> HttpResponse<'a> {
         header_string
     }
 
-    pub fn body(&self) -> &str {
+    pub fn body(&self) -> Vec<u8> {
         match &self.body {
             Some(b) => {
                 // String 转换为字符串切片
-                b.as_str()
+                b.to_vec()
             },
-            None => ""
+            None => [].to_vec()
         }
     }
 
