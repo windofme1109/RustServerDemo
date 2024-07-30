@@ -1,6 +1,6 @@
-use crate::handlers::course::*;
-use crate::handlers::general::*;
-use crate::handlers::teacher::*;
+use crate::handler::course::*;
+use crate::handler::general::*;
+use crate::handler::teacher::*;
 use actix_web::web;
 
 pub fn general_routes(cfg: &mut web::ServiceConfig) {

@@ -10,7 +10,7 @@ use sqlx::postgres::PgPoolOptions;
 use std::sync::Mutex;
 
 #[path = "../handler/mod.rs"]
-mod handlers;
+mod handler;
 
 #[path = "../routers.rs"]
 mod routers;
