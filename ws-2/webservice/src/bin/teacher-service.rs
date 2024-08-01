@@ -15,8 +15,20 @@ mod routers;
 #[path="../handler/mod.rs"]
 mod handler;
 
+#[path ="../models/mod.rs"]
+mod models;
+
+#[path ="../dbaccess/mod.rs"]
+mod dbaccess;
+
+#[path ="../errors.rs"]
+mod errors;
+
 use state::AppState;
-use routers::general_route;
+use routers::general_routes;
+use routers::course_routes;
+use routers::teacher_routes;
+
 #[actix_rt::main]
 async fn main() -> io::Result<()> {
 
@@ -42,8 +54,9 @@ async fn main() -> io::Result<()> {
 
         App::new()
             .app_data(shared_data.clone())
-            .configure(general_route)
-
+            .configure(general_routes)
+            .configure(course_routes)
+            .configure(teacher_routes)
     };
 
     HttpServer::new(app)

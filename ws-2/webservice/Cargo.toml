@@ -17,7 +17,7 @@ sqlx = { version = "0.6.3", default-features = false, features = [
     "chrono"
 ] }
 
-
+serde = {version = "1.0.132", features = ["derive"]}
 
 [[bin]]
 name = "teacher-service"
