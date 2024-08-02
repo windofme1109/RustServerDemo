@@ -26,7 +26,11 @@ pub fn course_routes(cfg: &mut web::ServiceConfig) {
 pub fn teacher_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(
         web::scope("/teacher")
-        .service(get_testing)
+        .service(get_all_teachers)
+        .service(post_new_teacher)
+        .service(get_teacher_detail)
+        .service(update_teacher_detail)
+        .service(delete_teacher)
     );
     
 }
