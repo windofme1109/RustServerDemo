@@ -1,5 +1,6 @@
-use actix_web::web;
-
+use actix_web::{middleware, web};
+use actix_web::http::Method;
+use actix_web::middleware::TrailingSlash;
 use crate::handler::general::*;
 use crate::handler::course::*;
 use crate::handler::teacher::*;
@@ -23,14 +24,17 @@ pub fn course_routes(cfg: &mut web::ServiceConfig) {
     
 }
 
-pub fn teacher_routes(cfg: &mut web::ServiceConfig) {
-    cfg.service(
+pub fn teacher_routes(cfg: &mut web::ServiceConfig) { cfg.service(
+
+        // todo 使用 NormalizePath 中间件对尾斜杠进行处理
         web::scope("/teacher")
-        .service(get_all_teachers)
-        .service(post_new_teacher)
-        .service(get_teacher_detail)
-        .service(update_teacher_detail)
-        .service(delete_teacher)
+            .wrap(middleware::NormalizePath::new(TrailingSlash::Always))
+            .service(get_all_teachers)
+            .service(post_new_teacher)
+            .service(get_teacher_detail)
+            .service(update_teacher_detail)
+            .service(delete_teacher)
+            .default_service(web::route().method(Method::GET))
     );
     
 }

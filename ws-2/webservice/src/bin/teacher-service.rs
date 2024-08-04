@@ -1,9 +1,10 @@
 use std::env;
 
 // 启动基本的服务
-use actix_web::{App, HttpServer, HttpResponse, web};
+use actix_web::{App, HttpServer, HttpResponse, middleware, web};
 use std::io;
 use std::sync::Mutex;
+use actix_web::http::Method;
 use sqlx::postgres::PgPoolOptions;
 use dotenv::dotenv;
 
@@ -31,7 +32,7 @@ use routers::teacher_routes;
 
 #[actix_rt::main]
 async fn main() -> io::Result<()> {
-
+    // dotenv 读取 .env文件，其读取的路径是 执行 cargo run 命令时所在的路径
     // 从 .env 文件中读取变量，读取成功以后，将这些变量注入操作系统的环境变量中
     dotenv().ok();
 
